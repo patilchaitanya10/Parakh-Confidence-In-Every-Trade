@@ -1,0 +1,18 @@
+"""Run the full Parakh analysis in the terminal (no dashboard needed):  python run_analysis.py"""
+import analysis as A
+inv, trd = A.load_data()
+print("\n########## 1. CLASSIFICATION — predict loss_occurred ##########")
+c = A.run_classification(trd)
+print(c['metrics'].to_string()); print("Best (F1):", c['best'], "| base loss rate:", round(c['base_rate'],3))
+print("\nTop loss drivers:\n", c['importance'].head(10).round(3).to_string())
+print("\n########## 2. SEGMENTATION — K-Means ##########")
+s = A.run_segmentation(inv, 4)
+print(s['scan'].round(3).to_string(index=False)); print("\n", s['profile'].to_string())
+print("\n########## 3. ASSOCIATION RULES ##########")
+a = A.run_association(trd)
+print("Loss rules:\n", a['loss'].head(10).to_string(index=False))
+print("\nProtective rules:\n", a['protective'].head(6).to_string(index=False))
+print("\n########## 4. REGRESSION — willingness to pay ##########")
+r = A.run_regression(inv)
+print(r['metrics'].to_string()); print("\nLasso drivers:\n", r['lasso_coef'].head(10).to_string())
+print("\nDone.")
